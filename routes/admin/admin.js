@@ -1,15 +1,22 @@
 const express = require("express");
-const { adminSignUp } = require('../../services/admin.service.js')
+const { adminSignUp, adminLogin } = require('../../services/admin.service.js')
 const adminRoute = express.Router();
 const validator = require("express-joi-validation");
 const validatorQuery = validator.createValidator({});
-const { userSignUpValidator } = require('../../validators/admin/admin.validator')
+const { userSignUpValidator, userLoginValidator } = require('../../validators/admin/admin.validator')
 
 adminRoute.post(
     "/sign-up",
     validatorQuery.body(userSignUpValidator),
     adminSignUp
 );
+
+adminRoute.post(
+    "/login",
+    validatorQuery.body(userLoginValidator),
+    adminLogin
+);
+
 
 
 module.exports = adminRoute;

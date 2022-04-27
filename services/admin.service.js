@@ -2,7 +2,8 @@ const adminModel = require('../models/employee');
 const bcryptService = require('../helpers/bcrypt')
 const responseService = require('../helpers/response')
 const userExists = require('../common/checkUser')
-const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword } = require('../helpers/responseMessage')
+const tokenService = require('../helpers/jwt')
+const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed } = require('../helpers/responseMessage')
 const adminServiceObj = {};
 
 
@@ -36,19 +37,22 @@ adminServiceObj.adminLogin = async (req, res) => {
         if (!isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', userNotExists)
         }
-        const userDetails = await adminModel.findOne({ email }, { password: 1 }).lean().exec();
-        //Compare password with encrypted password
+        const userDetails = await adminModel.findOne({ email }, { password: 1, roleId: 1, email: 1, _id: 1 }).lean().exec();
+
+        //Validate password
         const isValidPassword = await bcryptService.validatePassword(password, userDetails.password)
         if (!isValidPassword) {
             return responseService.returnToResponse(res, {}, 400, '', invalidPassword)
         }
 
         //Generate JWT token 
+        const token = tokenService.generateJWTToken({ id: userDetails._id, email: userDetails.email, role: userDetails.roleId })
 
-        const newAdmin = await adminModel.create({ email, password: encryptedPassword, firstName, lastName, roleId, userName: req.body?.userName });
-        return responseService.returnToResponse(res, newAdmin, 200, '', registerSuccess)
+        //Update user details
+        await adminModel.findByIdAndUpdate(userDetails._id, { token }, { new: true });
+        return responseService.returnToResponse(res, token, 200, '', loginSuccess)
     } catch (error) {
-        return responseService.returnToResponse(res, {}, 500, error.message, registerFailed)
+        return responseService.returnToResponse(res, {}, 500, error.message, userLoginFailed)
     }
 }
 

@@ -2,7 +2,7 @@ module.exports = {
     registerSuccess: "User signup successfully!",
     registerFailed: "Something went worong while user signup!",
     tokenNotProvided: "Token not Provided!!",
-    loginSuccess: "Successfully logged in",
+    loginSuccess: "User logged in successfully",
     invalidCredentials: "Invalid Credentials!",
     userNotFound: "User Not found!!",
     Unauthorized: "Unauthorized!",
@@ -18,6 +18,7 @@ module.exports = {
     requiredEmail: 'Email should not be empty',
     requiredPassword: 'Password should not be empty',
     userNotExists: 'User is not exists with this email',
-    invalidPassword: 'Invalid password.Please try again with correct password'
+    invalidPassword: 'Invalid password.Please try again with correct password',
+    userLoginFailed: 'Something went wrong while user sign-in'
 
 }
