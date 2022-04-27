@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const path = require('path');
 require('dotenv').config()
 require('./config/db')
-
+const baseRoute = require('./routes/base/index')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, '/public')))
 
 
 //routes
-// app.use('/', require('./routes'))
+app.use('/', baseRoute)
 
 
 const port = process.env.PORT || 3000

@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const Userdata = new mongoose.Schema({
 
-    fname: {
+    firstName: {
         type: String,
 
     },
-    lname: {
+    lastName: {
         type: String,
 
     },
@@ -35,4 +35,4 @@ const Userdata = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model('userdatas', Userdata);
+module.exports = mongoose.model('employee', Userdata);

@@ -1,6 +1,6 @@
-const express = require("express");
+// const express = require("express");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 const generator = require("generate-password");
 const Schema1 = require("../models/employee");
 const upload = require("../helper/multer");
@@ -16,29 +16,6 @@ let genderRegex = new RegExp(/^[a-zA-Z ]/);
 
 exports.createData = async (req, res) => {
   try {
-    // const arr = [];
-    // if (!userRegex.test(req.body.fname)) {
-    //   arr.push("fname must be text and minimum 3 characters");
-    // }
-    // if (!userRegex.test(req.body.lname)) {
-    //   arr.push("lname must be text and minimum 3 characters");
-    // }
-    // if (!emailRegex.test(req.body.email)) {
-    //   arr.push("please enter a valid email address");
-    // }
-    // if (!genderRegex.test(req.body.department)) {
-    //   arr.push("please enter your department name");
-    // }
-    // if (!genderRegex.test(req.body.role)) {
-    //   arr.push("please enter your role name");
-    // }
-
-    // const result = validation.joiSchema1.validate(req.body);
-    // console.log(result);
-
-    // if (result.error) {
-    //   res.send(arr);
-    // } else {
       const uploadimage = await upload.uplodaImage(req.file.path);
 
       const password = generator.generate({
