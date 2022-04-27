@@ -4,11 +4,9 @@ const Userdata = new mongoose.Schema({
 
     firstName: {
         type: String,
-
     },
     lastName: {
         type: String,
-
     },
     email: {
         type: String,
@@ -26,13 +24,18 @@ const Userdata = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        default: ''
     },
     username: {
         type: String,
         default: ''
     },
     token: {
+        type: String,
+        default: ''
+    },
+    verificationCode: {
         type: String,
         default: ''
     }

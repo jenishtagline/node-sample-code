@@ -2,8 +2,9 @@ const adminModel = require('../models/employee');
 const bcryptService = require('../helpers/bcrypt')
 const responseService = require('../helpers/response')
 const userExists = require('../common/checkUser')
-const tokenService = require('../helpers/jwt')
-const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed } = require('../helpers/responseMessage')
+const tokenService = require('../helpers/jwt');
+const mailService = require('../helpers/mail')
+const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed, userInviteSuccess, userInviteFailed } = require('../helpers/responseMessage')
 const adminServiceObj = {};
 
 
@@ -53,6 +54,36 @@ adminServiceObj.adminLogin = async (req, res) => {
         return responseService.returnToResponse(res, token, 200, '', loginSuccess)
     } catch (error) {
         return responseService.returnToResponse(res, {}, 500, error.message, userLoginFailed)
+    }
+}
+
+//Service to add user
+adminServiceObj.addUser = async (req, res) => {
+    try {
+        const { _id } = req.user;
+        const { email, role, firstName, lastName } = req.body;
+
+        //Check if user exists with email
+        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        if (isUserPresentWithEmail) {
+            return responseService.returnToResponse(res, {}, 400, '', emailExists)
+        }
+
+        //Add user data to the Employee
+        await adminModel.create({ email, roleId: role })
+
+
+        //Create verification code
+        const verificationCode = Math.floor(Math.random() * 900000);
+
+        //Invite user through email
+        await mailService.sendInvitationEmail(email, { name: `${firstName} ${lastName}`, verificationCode, adminName })
+
+
+        await adminModel.findByIdAndUpdate(userDetails._id, { token }, { new: true });
+        return responseService.returnToResponse(res, token, 200, '', userInviteSuccess)
+    } catch (error) {
+        return responseService.returnToResponse(res, {}, 500, error.message, userInviteFailed);
     }
 }
 

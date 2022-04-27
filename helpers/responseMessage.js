@@ -19,6 +19,8 @@ module.exports = {
     requiredPassword: 'Password should not be empty',
     userNotExists: 'User is not exists with this email',
     invalidPassword: 'Invalid password.Please try again with correct password',
-    userLoginFailed: 'Something went wrong while user sign-in'
+    userLoginFailed: 'Something went wrong while user sign-in',
+    userInviteSuccess: 'User invited successfully',
+    userInviteFailed: 'Something went wrong while inviting user'
 
 }

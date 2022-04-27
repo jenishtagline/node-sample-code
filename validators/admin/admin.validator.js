@@ -30,6 +30,21 @@ validatorObj.userLoginValidator = Joi.object({
     })
 });
 
+validatorObj.addUserValidator = Joi.object({
+    firstName: Joi.string().required().messages({
+        'string.empty': requiredFirstName,
+    }),
+    lastName: Joi.string().required().messages({
+        'string.empty': requiredLastName
+    }),
+    roleId: Joi.string().required().messages({
+        'string.empty': requiredUserRole
+    }),
+    email: Joi.string().email().required().messages({
+        'string.empty': requiredEmail
+    })
+});
+
 
 
 module.exports = validatorObj
