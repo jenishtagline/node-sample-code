@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
  const validation = require("../middleware/joiValidation");
 const Schema = require("../models/index");
-const Schema1 = require("../models/userData")
+const Schema1 = require("../models/employee")
 const helpers = require("../helper/mail");
 require("dotenv").config();
 const cron = require('node-cron');
