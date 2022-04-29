@@ -75,34 +75,25 @@ exports.userEmail = (email, password, username) => {
 
 
 const mailerTransporter = (subject, email, data) => {
-
   const transporter = nodemailer.createTransport({
-    // host: 'google.com',
-    // port: 465,
-    // secure: true,
     service: 'gmail',
     auth: {
-      user: 'maulik.tagline@gmail.com',
-      pass: 'Tagline@123'
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
     }
   });
-
   return transporter;
-
-
-
 }
-
 
 //Function to send verficiation mail to user
 mailServiceObj.sendInvitationEmail = async (email, emailPayload) => {
   try {
     const { verificationCode, name, adminName } = emailPayload
-    const ejsFileDetails = await ejs.renderFile(__dirname + "/templates/invitation.ejs", { name, verificationCode, adminName });
+    const ejsFileDetails = await ejs.renderFile(process.cwd() + "/templates/invitation.ejs", { name, verificationCode, adminName });
 
     const transporter = await mailerTransporter();
     const mainOptions = {
-      from: 'maulik.tagline@gmail.com',
+      from: process.env.EMAIL_USER,
       to: email,
       subject: 'You have been invited!',
       html: ejsFileDetails

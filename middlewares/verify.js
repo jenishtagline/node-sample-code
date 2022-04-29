@@ -1,5 +1,7 @@
 const tokenService = require('../helpers/jwt')
 const adminModel = require('../models/employee')
+const responseService = require("../helpers/response")
+const mongoose = require('mongoose')
 
 // module.exports = (req, res, next) => {
 //   try {
@@ -25,25 +27,59 @@ const adminModel = require('../models/employee')
 module.exports = async (req, res, next) => {
   try {
     if (!req?.headers?.authorization) {
-      throw new Error('Unauthorised access,please provide token')
+      return responseService.returnToResponse(res, {}, 401, '', 'Unauthorised')
     }
     const token = req.headers.authorization.split(" ")[1];
     const userDetails = await tokenService.decodeJWTToken(token);
-    const adminUserDetails = await adminModel.findOne({ email: userDetails.email }, { email: 1, _id: 1, roleId: 1 }).populate({ path: 'role', select: 'name' }).lean().exec()
-    if (!adminUserDetails) {
-      throw new Error('Invalid user')
+    const adminUserDetails = await adminModel.aggregate([{
+      $match: {
+        email: userDetails.email,
+        roleId: mongoose.Types.ObjectId(userDetails.role)
+      },
+    },
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'roleId',
+          foreignField: '_id',
+          as: 'roleDetails'
+        }
+      },
+      {
+        $project: {
+          email: 1,
+          roleId: 1,
+          role: {
+            $first: "$roleDetails"
+          },
+          name: "$role.name",
+          firstName: 1,
+          lastName: 1
+        }
+      },
+      {
+        $project: {
+          email: 1,
+          roleId: 1,
+          name: "$role.name",
+          firstName: 1,
+          lastName: 1
+        }
+      },
+      {
+        $limit: 1
     }
-    if (adminUserDetails.roleId.name !== 'admin') {
-      throw new Error('You do not have permission to invite user')
+    ]);
+    if (!adminUserDetails.length) {
+      return responseService.returnToResponse(res, {}, 400, '', 'Invalid user')
     }
-    const { _id, email } = userDetails
-    req.user = {
-      email,
-      _id
+    if (adminUserDetails[0].name !== 'admin') {
+      return responseService.returnToResponse(res, {}, 403, '', 'You do not have permission to invite user')
     }
+    req.user = adminUserDetails[0]
     next()
   } catch (error) {
-    throw new Error('Failed to validate token')
+    return responseService.returnToResponse(res, {}, 401, '', 'Unauthorised')
   }
 
 }

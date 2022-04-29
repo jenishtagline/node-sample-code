@@ -24,7 +24,6 @@ const Userdata = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         default: ''
     },
     username: {

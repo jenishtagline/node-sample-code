@@ -21,6 +21,11 @@ module.exports = {
     invalidPassword: 'Invalid password.Please try again with correct password',
     userLoginFailed: 'Something went wrong while user sign-in',
     userInviteSuccess: 'User invited successfully',
-    userInviteFailed: 'Something went wrong while inviting user'
+    userInviteFailed: 'Something went wrong while inviting user',
+    roleNotExists: "Role does not exists",
+    requiredVerificationCode: "Verification code should not be empty",
+    invalidVerificationCode: "Invalid verification code!",
+    accountSetupSuccess: 'Account setup successfully!',
+    setupAccountFailed: "Something went wrong while setting up the account"
 
 }
