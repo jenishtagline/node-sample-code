@@ -34,6 +34,9 @@ module.exports = {
     requiredUserId: "User Id should not be empty",
     userRemoveSuccess: 'User deleted successfully',
     userRemoveFailed: 'Something went wrong while removing user',
-    restrictedToDeleteUser: 'You do not have permission to remove user'
+    restrictedToDeleteUser: 'You do not have permission to remove user',
+    restrictedToUpdateUser: 'You do not have permission to update user details',
+    userUpdateSuccess: 'Account details updated successfully',
+    userUpdateFailed: 'Something went wrong while updating account'
 
 }

@@ -51,5 +51,14 @@ validatorObj.removeUserValidator = Joi.object({
     })
 });
 
+validatorObj.updateUserValidator = Joi.object({
+    id: Joi.string().required().messages({
+        'string.empty': requiredUserId
+    }),
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
+    roleId: Joi.string().optional(),
+});
+
 
 module.exports = validatorObj

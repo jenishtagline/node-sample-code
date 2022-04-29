@@ -5,8 +5,8 @@ const responseService = require('../helpers/response')
 const userExists = require('../common/checkUser')
 const tokenService = require('../helpers/jwt');
 const mailService = require('../helpers/mail')
-const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed, userInviteSuccess, userInviteFailed, invalidUserId, userRemoveFailed, userRemoveSuccess, restrictedToDeleteUser } = require('../helpers/responseMessage')
-const { validIObjectId } = require('../common/validaObjectId')
+const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed, userInviteSuccess, userInviteFailed, invalidUserId, userRemoveFailed, userRemoveSuccess, restrictedToDeleteUser, restrictedToUpdateUser, userUpdateSuccess, userUpdateFailed } = require('../helpers/responseMessage')
+const { validIObjectId } = require('../common/validObjectId')
 const adminServiceObj = {};
 
 
@@ -121,6 +121,44 @@ adminServiceObj.removeUser = async (req, res) => {
         return responseService.returnToResponse(res, {}, 200, '', userRemoveSuccess)
     } catch (error) {
         return responseService.returnToResponse(res, {}, 500, error.message, userRemoveFailed);
+    }
+}
+
+//Service to update user account
+adminServiceObj.updateUser = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const { _id } = req.user;
+
+        //Check if valid user id
+        const isValid = validIObjectId(id);
+        if (!isValid) {
+            return responseService.returnToResponse(res, {}, 400, '', invalidUserId)
+        }
+
+        //Check if user exists
+        const isUserPresentWithEmail = await userExists.checkIfUserPresent(id);
+        if (!isUserPresentWithEmail) {
+            return responseService.returnToResponse(res, {}, 400, '', userNotExists)
+        }
+
+        //Check if Admin has permission to update user
+        const isAdminAccess = await adminModel.findOne({ _id: id, addedBy: _id }, { _id: 1 }).lean().exec();
+        if (!isAdminAccess) {
+            return responseService.returnToResponse(res, {}, 400, '', restrictedToUpdateUser)
+        }
+
+        const updateUserObj = {}
+        Object.keys(req.body).map(function (key) {
+            if (key !== 'id') {
+                updateUserObj[key] = req.body[key]
+            }
+        });
+
+        await adminModel.findByIdAndUpdate(id, { $set: updateUserObj }, { new: true })
+        return responseService.returnToResponse(res, {}, 200, '', userUpdateSuccess)
+    } catch (error) {
+        return responseService.returnToResponse(res, {}, 500, error.message, userUpdateFailed);
     }
 }
 
