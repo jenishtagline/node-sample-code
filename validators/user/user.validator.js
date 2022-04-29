@@ -30,4 +30,9 @@ validatorObj.userLoginValidator = Joi.object({
     })
 });
 
+validatorObj.updateProfileValidator = Joi.object({
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional()
+});
+
 module.exports = validatorObj

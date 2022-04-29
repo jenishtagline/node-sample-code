@@ -1,33 +1,29 @@
-const multer = require("multer");
-require("../config/cloudconfig")
-const cloudinary = require("cloudinary").v2;
+const multer = require('multer');
+const path = require('path')
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-      cb(null, './uploads');
-  },
-  filename: function (req, file, cb) {
-      cb(null, Date.now() + "--" + file.originalname);
+const imageStorage = multer.diskStorage({
+  // Destination to store image     
+  destination: './uploads/',
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '_' + Date.now()
+      + path.extname(file.originalname))
+
   }
 });
 
-const fileFilter = (req, file, cb) => {
-  if((file.mimetype).includes('jpeg') || (file.mimetype).includes('png') || (file.mimetype).includes('jpg')){
-      cb(null, true);
-  } else{
-      cb(null, false);
-  }
-};
 
+const upload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpg)$/)) {
+      // upload only png and jpg format
+      return cb(new Error('Please upload a Image'))
+     }
+    cb(undefined, true)
+}
+}).single('profile')
 
-exports.upload = multer({ storage: storage, fileFilter: fileFilter})
-
-   
-
- exports.uplodaImage = async(path) =>{
-
-    //  console.log(path);
-     return await cloudinary.uploader.upload(
-      path)
-    }
-  
+module.exports = { upload }

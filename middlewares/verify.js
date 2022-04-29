@@ -83,3 +83,22 @@ module.exports = async (req, res, next) => {
   }
 
 }
+
+module.exports.verifyUser = async (req, res, next) => {
+  try {
+    if (!req?.headers?.authorization) {
+      return responseService.returnToResponse(res, {}, 401, '', 'Unauthorised')
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    const userDetails = await tokenService.decodeJWTToken(token);
+    const userExists = await adminModel.findOne({ email: userDetails.email }, { _id: 1, email: 1, firstName: 1, lastName: 1 }).lean().exec()
+    if (!userExists) {
+      return responseService.returnToResponse(res, {}, 400, '', 'Invalid user')
+    }
+    req.user = userExists
+    next()
+  } catch (error) {
+    return responseService.returnToResponse(res, {}, 401, '', 'Unauthorised')
+  }
+
+}

@@ -26,6 +26,9 @@ module.exports = {
     requiredVerificationCode: "Verification code should not be empty",
     invalidVerificationCode: "Invalid verification code!",
     accountSetupSuccess: 'Account setup successfully!',
-    setupAccountFailed: "Something went wrong while setting up the account"
+    setupAccountFailed: "Something went wrong while setting up the account",
+    imageShouldNotBeEmpty: "Profile image should not be empty",
+    userProfileUpdateSuccess: 'Profile image updated successfully',
+    userProfileUpdateFailed: 'Something went wrong while updating user profile'
 
 }

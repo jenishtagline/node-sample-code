@@ -3,7 +3,7 @@ const bcryptService = require('../helpers/bcrypt')
 const responseService = require('../helpers/response')
 const userExists = require('../common/checkUser')
 const tokenService = require('../helpers/jwt')
-const { userNotExists, invalidPassword, setupAccountFailed, accountSetupSuccess, invalidVerificationCode, loginSuccess, userLoginFailed } = require('../helpers/responseMessage')
+const { userNotExists, invalidPassword, setupAccountFailed, accountSetupSuccess, invalidVerificationCode, loginSuccess, userLoginFailed, imageShouldNotBeEmpty, userProfileUpdateSuccess, userProfileUpdateFailed } = require('../helpers/responseMessage')
 const userServiceObj = {};
 
 //Service to user login
@@ -67,4 +67,22 @@ userServiceObj.setupAccount = async (req, res) => {
     }
 }
 
+//Update user profile
+userServiceObj.updateProfile = async (req, res) => {
+    try {
+        const { _id } = req.user;
+        if (!req.file) {
+            return responseService.returnToResponse(res, {}, 400, '', imageShouldNotBeEmpty)
+        }
+        //Update user details
+        await userModel.findByIdAndUpdate(_id, {
+            $set: {
+                profile: `/${req.file.path}`
+            }
+        }, { new: true });
+        return responseService.returnToResponse(res, {}, 200, '', userProfileUpdateSuccess)
+    } catch (error) {
+        return responseService.returnToResponse(res, {}, 500, error.message, userProfileUpdateFailed)
+    }
+}
 module.exports = userServiceObj
