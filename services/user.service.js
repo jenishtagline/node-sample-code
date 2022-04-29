@@ -12,7 +12,7 @@ userServiceObj.userLogin = async (req, res) => {
         const { password, email } = req.body;
 
         //Check if user exists with email
-        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        const isUserPresentWithEmail = await userExists.checkIfUserPresentByEmail(email);
         if (!isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', userNotExists)
         }
@@ -41,7 +41,7 @@ userServiceObj.setupAccount = async (req, res) => {
         const { password, email, verificationCode, firstName, lastName } = req.body;
 
         //Check if user exists with email
-        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        const isUserPresentWithEmail = await userExists.checkIfUserPresentByEmail(email);
         if (!isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', userNotExists)
         }

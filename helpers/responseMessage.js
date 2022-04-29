@@ -29,6 +29,11 @@ module.exports = {
     setupAccountFailed: "Something went wrong while setting up the account",
     imageShouldNotBeEmpty: "Profile image should not be empty",
     userProfileUpdateSuccess: 'Profile image updated successfully',
-    userProfileUpdateFailed: 'Something went wrong while updating user profile'
+    userProfileUpdateFailed: 'Something went wrong while updating user profile',
+    invalidUserId: 'Invalid user id',
+    requiredUserId: "User Id should not be empty",
+    userRemoveSuccess: 'User deleted successfully',
+    userRemoveFailed: 'Something went wrong while removing user',
+    restrictedToDeleteUser: 'You do not have permission to remove user'
 
 }

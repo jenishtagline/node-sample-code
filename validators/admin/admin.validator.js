@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { requiredEmail, requiredPassword, requiredFirstName, requiredLastName, requiredUserRole } = require('../../helpers/responseMessage')
+const { requiredEmail, requiredPassword, requiredFirstName, requiredLastName, requiredUserRole, requiredUserId } = require('../../helpers/responseMessage')
 const validatorObj = {};
 
 validatorObj.userSignUpValidator = Joi.object({
@@ -45,6 +45,11 @@ validatorObj.addUserValidator = Joi.object({
     })
 });
 
+validatorObj.removeUserValidator = Joi.object({
+    id: Joi.string().required().messages({
+        'string.empty': requiredUserId
+    })
+});
 
 
 module.exports = validatorObj

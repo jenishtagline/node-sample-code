@@ -54,7 +54,8 @@ module.exports = async (req, res, next) => {
           },
           name: "$role.name",
           firstName: 1,
-          lastName: 1
+          lastName: 1,
+          _id: 1
         }
       },
       {
@@ -63,7 +64,8 @@ module.exports = async (req, res, next) => {
           roleId: 1,
           name: "$role.name",
           firstName: 1,
-          lastName: 1
+          lastName: 1,
+          _id: 1
         }
       },
       {

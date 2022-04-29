@@ -5,7 +5,8 @@ const responseService = require('../helpers/response')
 const userExists = require('../common/checkUser')
 const tokenService = require('../helpers/jwt');
 const mailService = require('../helpers/mail')
-const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed, userInviteSuccess, userInviteFailed } = require('../helpers/responseMessage')
+const { emailExists, registerSuccess, registerFailed, userNotExists, invalidPassword, loginSuccess, userLoginFailed, userInviteSuccess, userInviteFailed, invalidUserId, userRemoveFailed, userRemoveSuccess, restrictedToDeleteUser } = require('../helpers/responseMessage')
+const { validIObjectId } = require('../common/validaObjectId')
 const adminServiceObj = {};
 
 
@@ -15,7 +16,7 @@ adminServiceObj.adminSignUp = async (req, res) => {
         const { password, email, firstName, lastName, roleId } = req.body;
 
         //Check if user exists with email
-        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        const isUserPresentWithEmail = await userExists.checkIfUserPresentByEmail(email);
         if (isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', emailExists)
         }
@@ -35,7 +36,7 @@ adminServiceObj.adminLogin = async (req, res) => {
         const { password, email } = req.body;
 
         //Check if user exists with email
-        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        const isUserPresentWithEmail = await userExists.checkIfUserPresentByEmail(email);
         if (!isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', userNotExists)
         }
@@ -61,6 +62,7 @@ adminServiceObj.adminLogin = async (req, res) => {
 //Service to add user
 adminServiceObj.addUser = async (req, res) => {
     try {
+        const { _id } = req.user;
         const { email, roleId, firstName, lastName } = req.body;
 
         //Check if role is valid role
@@ -71,7 +73,7 @@ adminServiceObj.addUser = async (req, res) => {
 
 
         //Check if user exists with email
-        const isUserPresentWithEmail = await userExists.checkIfUserPresent(email);
+        const isUserPresentWithEmail = await userExists.checkIfUserPresentByEmail(email);
         if (isUserPresentWithEmail) {
             return responseService.returnToResponse(res, {}, 400, '', emailExists)
         }
@@ -83,10 +85,42 @@ adminServiceObj.addUser = async (req, res) => {
         await mailService.sendInvitationEmail(email, { name: `${firstName} ${lastName}`, verificationCode, adminName: `${req.user?.firstName} ${req.user?.lastName}` })
 
         //Add user data to the Employee
-        await adminModel.create({ email, roleId, verificationCode })
+        await adminModel.create({ email, roleId, verificationCode, addedBy: _id })
         return responseService.returnToResponse(res, {}, 200, '', userInviteSuccess)
     } catch (error) {
         return responseService.returnToResponse(res, {}, 500, error.message, userInviteFailed);
+    }
+}
+
+//Service to remove user account
+adminServiceObj.removeUser = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const { _id } = req.user;
+
+        //Check if valid user id
+        const isValid = validIObjectId(id);
+        if (!isValid) {
+            return responseService.returnToResponse(res, {}, 400, '', invalidUserId)
+        }
+
+        //Check if user exists
+        const isUserPresentWithEmail = await userExists.checkIfUserPresent(id);
+        if (!isUserPresentWithEmail) {
+            return responseService.returnToResponse(res, {}, 400, '', userNotExists)
+        }
+
+        //Check if Admin has permission to remove user
+        const isAdminAccess = await adminModel.findOne({ _id: id, addedBy: _id }, { _id: 1 }).lean().exec();
+        if (!isAdminAccess) {
+            return responseService.returnToResponse(res, {}, 400, '', restrictedToDeleteUser)
+        }
+
+        //Remove user 
+        await adminModel.deleteOne({ _id: id });
+        return responseService.returnToResponse(res, {}, 200, '', userRemoveSuccess)
+    } catch (error) {
+        return responseService.returnToResponse(res, {}, 500, error.message, userRemoveFailed);
     }
 }
 

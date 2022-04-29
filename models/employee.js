@@ -37,8 +37,11 @@ const Userdata = new mongoose.Schema({
     verificationCode: {
         type: String,
         default: ''
-    }
-
+    },
+    addedBy: {
+        type: mongoose.Types.ObjectId,
+        default: null
+    },
 });
 
 module.exports = mongoose.model('employee', Userdata);
